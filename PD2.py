@@ -16,14 +16,11 @@ def log_correction(img):
 
     img_float = img.astype(np.float32)
 
-    # normalization
     img_float = img_float / 255.0
 
-    # logarithmic transform
     c = 1 / np.log(1 + np.max(img_float))
     log_img = c * np.log(1 + img_float)
 
-    # back to 0-255
     log_img = np.uint8(log_img * 255)
 
     return log_img
