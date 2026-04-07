@@ -1,6 +1,15 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import uuid
+from IPython.display import display, Image
+
+
+def render_current_figure():
+    temp_name = f"/tmp/{uuid.uuid4().hex}.png"
+    plt.savefig(temp_name, dpi=150, bbox_inches="tight")
+    plt.close()
+    display(Image(filename=temp_name))
 
 
 def read_image_rgb(path):
@@ -9,6 +18,7 @@ def read_image_rgb(path):
         raise ValueError(f"Cannot read image: {path}")
     image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
     return image_rgb
+
 
 def show_images(images, titles, cols=2, figsize=(12, 6)):
     rows = int(np.ceil(len(images) / cols))
@@ -21,7 +31,8 @@ def show_images(images, titles, cols=2, figsize=(12, 6)):
         plt.axis("off")
 
     plt.tight_layout()
-    plt.show()
+    render_current_figure()
+
 
 def add_gaussian_noise(image, mean=0, sigma=55):
     image_float = image.astype(np.float32)
@@ -29,6 +40,7 @@ def add_gaussian_noise(image, mean=0, sigma=55):
     noisy = image_float + noise
     noisy = np.clip(noisy, 0, 255).astype(np.uint8)
     return noisy
+
 
 def add_jpeg_artifacts(image, quality=8):
     image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -41,6 +53,7 @@ def add_jpeg_artifacts(image, quality=8):
     decoded_bgr = cv2.imdecode(encimg, 1)
     decoded_rgb = cv2.cvtColor(decoded_bgr, cv2.COLOR_BGR2RGB)
     return decoded_rgb
+
 
 def show_noisy_images(dataset, image_paths):
     gaussian_row = []
@@ -65,7 +78,6 @@ def show_noisy_images(dataset, image_paths):
     show_images(noisy_images, noisy_titles, cols=2, figsize=(12, 10))
 
 
-
 def build_results(dataset):
     results = []
 
@@ -88,7 +100,6 @@ def build_results(dataset):
         })
 
     return results
-
 
 
 def get_result(results, image_name, noise_type):
@@ -144,17 +155,14 @@ def show_filter_comparison_for_image(results, image_name, figsize=(12, 24)):
     fig, axes = plt.subplots(6, 2, figsize=figsize)
 
     for row, item in enumerate(comparisons):
-       
         axes[row, 0].imshow(item["noisy"])
         axes[row, 0].axis("off")
         axes[row, 0].set_title("Noisy image", fontsize=12)
 
-        
         axes[row, 1].imshow(item["filtered"])
         axes[row, 1].axis("off")
         axes[row, 1].set_title(item["filter_title"], fontsize=12)
 
-      
         axes[row, 0].set_ylabel(
             item["row_label"],
             fontsize=11,
@@ -165,7 +173,7 @@ def show_filter_comparison_for_image(results, image_name, figsize=(12, 24)):
 
     plt.suptitle(f"Filter comparison for {image_name}", fontsize=16, fontweight="bold")
     plt.tight_layout()
-    plt.show()
+    render_current_figure()
 
 
 image_paths = ["image1.jpg", "image2.jpg"]
@@ -174,7 +182,6 @@ images = [read_image_rgb(path) for path in image_paths]
 
 print("Original images:")
 show_images(images, [f"Original: {name}" for name in image_paths], cols=2, figsize=(12, 6))
-
 
 dataset = []
 
@@ -196,11 +203,9 @@ for name, img in zip(image_paths, images):
         "noisy": jpeg_noisy
     })
 
-
 show_noisy_images(dataset, image_paths)
 
 results = build_results(dataset)
 
 show_filter_comparison_for_image(results, image_paths[0], figsize=(12, 24))
-
 show_filter_comparison_for_image(results, image_paths[1], figsize=(12, 24))
