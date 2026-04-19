@@ -22,7 +22,7 @@ def apply_canny(image, blur_ksize=9):
     edges = cv2.Canny(gray_filtered, 50, 150) 
     return edges
 
-def roberts_operator(image, threshold=50):
+def roberts_operator(image, threshold):
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     gray = gray.astype(np.float32)
 
@@ -49,8 +49,16 @@ def roberts_operator(image, threshold=50):
 images = [img1, img2, img3]
 titles = ["Original", "Noisy", "Custom"]
 
-canny_results = [apply_canny(img) for img in images]
-roberts_results = [roberts_operator(img) for img in images]
+img1_canny = apply_canny(img1)
+img2_canny = apply_canny(img2)
+img3_canny = apply_canny(img3)
+
+img1_roberts = roberts_operator(img1, threshold=60)
+img2_roberts = roberts_operator(img2, threshold=100)
+img3_roberts = roberts_operator(img3, threshold=20)
+
+canny_results = [img1_canny, img2_canny, img3_canny]
+roberts_results = [img1_roberts, img2_roberts, img3_roberts]
 
 def show_results():
     fig, axes = plt.subplots(3, 3, figsize=(12, 8))
