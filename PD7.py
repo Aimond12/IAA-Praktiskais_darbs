@@ -1,4 +1,3 @@
-from scipy.__config__ import show
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -240,5 +239,6 @@ for i, img in enumerate(images):
         'params': image_params[i]
     })
 
-for item in dataset:
-    show_result(item)
+show_result(dataset[0])
+show_result(dataset[1])
+show_result(dataset[2])
